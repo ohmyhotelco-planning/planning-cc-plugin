@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:claude.com)",
+      "WebFetch(domain:help.figma.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(chmod:*)",
+      "Bash(git init:*)"
+    ]
+  }
+}
