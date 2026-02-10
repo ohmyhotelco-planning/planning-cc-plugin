@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Generated specs (runtime output)
+docs/specs/**/en/
+docs/specs/**/ko/
+docs/specs/**/vi/
+docs/specs/**/.progress/
+
+# Runtime
+*.log
+*.tmp
+__pycache__/
+node_modules/
