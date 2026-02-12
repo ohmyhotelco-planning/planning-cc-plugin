@@ -1,4 +1,4 @@
-<!-- Synced with en version: 2026-02-11T00:00:00Z -->
+<!-- Synced with en version: 2026-02-11T12:00:00Z -->
 
 [English version](README.md)
 
@@ -20,12 +20,24 @@
 
 ## 설치
 
-### GitHub에서 설치
+이 플러그인은 private GitHub 저장소를 통해 배포됩니다. 설치 전 해당 저장소에 대한 git 접근 권한이 필요합니다.
+
+**사전 요구사항**: `ohmyhotelco-planning/planning-cc-plugin`에 대한 git 접근 권한 (SSH key 또는 `gh auth login`)
 
 ```
+# 1. Register the private repo as a marketplace source
 /plugin marketplace add ohmyhotelco-planning/planning-cc-plugin
-/plugin install planning-plugin --scope project
+
+# 2. Install the plugin (project scope — saved to .claude/settings.json, shared with the team)
+/plugin install planning-plugin@planning-cc-plugin --scope project
 ```
+
+설치 확인:
+```
+/plugin
+```
+
+> **참고**: 비대화형 환경(CI 등)에서 자동 업데이트가 필요한 경우, `GITHUB_TOKEN` 환경 변수를 설정하십시오.
 
 ## 빠른 시작
 
@@ -34,7 +46,8 @@
 ### 1. 플러그인 설치
 
 ```
-/plugin install planning-plugin --scope project
+/plugin marketplace add ohmyhotelco-planning/planning-cc-plugin
+/plugin install planning-plugin@planning-cc-plugin --scope project
 ```
 
 ### 2. 새 명세서 시작
