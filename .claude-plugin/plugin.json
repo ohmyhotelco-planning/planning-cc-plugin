@@ -6,7 +6,5 @@
     "name": "Justin Choi"
   },
   "keywords": ["planning", "specification", "multi-agent", "review", "multilingual"],
-  "agents": "./agents/",
-  "skills": "./skills/",
   "hooks": "./hooks/hooks.json"
 }
