@@ -29,7 +29,7 @@
 /plugin marketplace add ohmyhotelco-planning/planning-cc-plugin
 
 # 2. Install the plugin (project scope — saved to .claude/settings.json, shared with the team)
-/plugin install planning-plugin@planning-cc-plugin --scope project
+/plugin install planning-plugin@ohmyhotelco-planning --scope project
 ```
 
 설치 확인:
@@ -47,7 +47,7 @@
 
 ```
 /plugin marketplace add ohmyhotelco-planning/planning-cc-plugin
-/plugin install planning-plugin@planning-cc-plugin --scope project
+/plugin install planning-plugin@ohmyhotelco-planning --scope project
 ```
 
 ### 2. 새 명세서 시작

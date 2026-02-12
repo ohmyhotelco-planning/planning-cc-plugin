@@ -25,7 +25,7 @@ This plugin is distributed via a private GitHub repository. You need git access 
 /plugin marketplace add ohmyhotelco-planning/planning-cc-plugin
 
 # 2. Install the plugin (project scope — saved to .claude/settings.json, shared with the team)
-/plugin install planning-plugin@planning-cc-plugin --scope project
+/plugin install planning-plugin@ohmyhotelco-planning --scope project
 ```
 
 Verify the installation:
@@ -43,7 +43,7 @@ Get from zero to your first spec in 5 steps:
 
 ```
 /plugin marketplace add ohmyhotelco-planning/planning-cc-plugin
-/plugin install planning-plugin@planning-cc-plugin --scope project
+/plugin install planning-plugin@ohmyhotelco-planning --scope project
 ```
 
 ### 2. Start a new spec
