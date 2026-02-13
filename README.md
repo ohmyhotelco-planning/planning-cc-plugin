@@ -99,7 +99,7 @@ Use this anytime to check progress.
 **What happens**:
 1. Creates directory structure under `docs/specs/{feature}/`
 2. Analyst agent scans your project and asks structured questions
-3. Spec draft is generated in the working language from the 11-section template
+3. Spec draft is generated in the working language from the 10-section template
 4. Translations to other supported languages are created in parallel
 5. Planner and tester run sequential reviews with scoring
 6. You resolve feedback, translations sync, and repeat or finalize
@@ -255,19 +255,18 @@ It then produces a context summary and asks you questions across 8 categories, 2
 
 ### Step 2: Spec Draft Generation
 
-The plugin fills in the 11-section template using your answers:
+The plugin fills in the 10-section template using your answers:
 
 1. **Overview** — Purpose, target users, success metrics (KPIs)
 2. **User Stories** — ID, role, goal, priority (P0/P1/P2)
 3. **Functional Requirements** — Each with business rules (BR-xxx) and acceptance criteria (AC-xxx)
 4. **Screen Definitions** — Layout, components, user actions per screen
 5. **Data Model** — Entities, fields, types, relationships
-6. **API Design** — Endpoints with request/response schemas and error codes
-7. **Error Handling** — Error code, condition, user message, resolution
-8. **Non-Functional Requirements** — Performance, security, accessibility, i18n
-9. **Test Scenarios** — Given/When/Then format
-10. **Open Questions** — Unresolved items with context and status
-11. **Review History** — Scores and decisions per round
+6. **Error Handling** — Error code, condition, user message, resolution
+7. **Non-Functional Requirements** — Performance, security, accessibility, i18n
+8. **Test Scenarios** — Given/When/Then format
+9. **Open Questions** — Unresolved items with context and status
+10. **Review History** — Scores and decisions per round
 
 Sections with insufficient information get TBD markers. The draft is saved to `docs/specs/{feature}/{workingLanguage}/{feature}-spec.md` with status `DRAFT`.
 
@@ -410,12 +409,11 @@ docs/specs/{feature}/
 3. Functional Requirements
 4. Screen Definitions
 5. Data Model
-6. API Design
-7. Error Handling
-8. Non-Functional Requirements
-9. Test Scenarios
-10. Open Questions
-11. Review History
+6. Error Handling
+7. Non-Functional Requirements
+8. Test Scenarios
+9. Open Questions
+10. Review History
 
 ## Tips & Best Practices
 

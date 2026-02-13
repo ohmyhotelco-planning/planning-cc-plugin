@@ -72,7 +72,7 @@ Return your review as structured JSON:
     {
       "id": "TS-002",
       "severity": "major",
-      "section": "9. Test Scenarios",
+      "section": "8. Test Scenarios",
       "title": "Missing negative test cases",
       "description": "Only happy path scenarios are defined. No tests for invalid input, unauthorized access, or server errors.",
       "suggestion": "Add test scenarios for: invalid email format, expired session, concurrent edit conflict."
@@ -95,8 +95,7 @@ Return your review as structured JSON:
     }
   ],
   "approved_sections": [
-    "5. Data Model — Field types and constraints are well-defined",
-    "6. API Design — Request/response schemas are clear and complete"
+    "5. Data Model — Field types and constraints are well-defined"
   ],
   "summary": "The spec has good coverage of happy path scenarios but lacks edge case definitions and negative test cases. Error handling section needs significant expansion."
 }

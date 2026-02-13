@@ -78,32 +78,7 @@
 
 ---
 
-## 6. API Design
-
-### {METHOD} {/api/path}
-
-**Description**: {What does this endpoint do?}
-
-**Request**:
-```json
-{
-}
-```
-
-**Response (200)**:
-```json
-{
-}
-```
-
-**Error Responses**:
-| Status | Code | Description |
-|--------|------|-------------|
-| 400 | INVALID_INPUT | {description} |
-
----
-
-## 7. Error Handling
+## 6. Error Handling
 
 | Error Code | Condition | User Message | Resolution |
 |------------|-----------|--------------|------------|
@@ -111,23 +86,23 @@
 
 ---
 
-## 8. Non-Functional Requirements
+## 7. Non-Functional Requirements
 
-### 8.1 Performance
+### 7.1 Performance
 - {requirement}
 
-### 8.2 Security
+### 7.2 Security
 - {requirement}
 
-### 8.3 Accessibility
+### 7.3 Accessibility
 - {requirement}
 
-### 8.4 Internationalization
+### 7.4 Internationalization
 - {requirement}
 
 ---
 
-## 9. Test Scenarios
+## 8. Test Scenarios
 
 ### TS-001: {Test Scenario Title}
 
@@ -137,7 +112,7 @@
 
 ---
 
-## 10. Open Questions
+## 9. Open Questions
 
 | ID | Question | Context | Status |
 |----|----------|---------|--------|
@@ -145,7 +120,7 @@
 
 ---
 
-## 11. Review History
+## 10. Review History
 
 | Round | Planner Score | Tester Score | Key Decisions | Date |
 |-------|---------------|--------------|---------------|------|

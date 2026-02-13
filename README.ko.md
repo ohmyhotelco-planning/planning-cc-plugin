@@ -103,7 +103,7 @@ Analyst 에이전트는 먼저 프로젝트(package.json, 소스 코드, 기존 
 **동작 과정**:
 1. `docs/specs/{feature}/` 하위에 디렉토리 구조를 생성합니다
 2. Analyst 에이전트가 프로젝트를 스캔하고 구조화된 질문을 합니다
-3. 11개 섹션 템플릿을 기반으로 작업 언어 명세서 초안이 생성됩니다
+3. 10개 섹션 템플릿을 기반으로 작업 언어 명세서 초안이 생성됩니다
 4. 나머지 지원 언어 번역이 병렬로 생성됩니다
 5. Planner와 Tester가 순차적으로 검토 및 점수를 매깁니다
 6. 피드백을 반영하고, 번역이 동기화되며, 반복하거나 최종화합니다
@@ -259,19 +259,18 @@ Specifications Overview:
 
 ### 단계 2: 명세서 초안 생성
 
-플러그인이 답변 내용을 기반으로 11개 섹션 템플릿을 채웁니다:
+플러그인이 답변 내용을 기반으로 10개 섹션 템플릿을 채웁니다:
 
 1. **개요(Overview)** — 목적, 대상 사용자, 성공 지표(KPI)
 2. **사용자 스토리(User Stories)** — ID, 역할, 목표, 우선순위 (P0/P1/P2)
 3. **기능 요구사항(Functional Requirements)** — 각 항목의 비즈니스 규칙(BR-xxx) 및 인수 기준(AC-xxx)
 4. **화면 정의(Screen Definitions)** — 레이아웃, 컴포넌트, 화면별 사용자 액션
 5. **데이터 모델(Data Model)** — 엔티티, 필드, 타입, 관계
-6. **API 설계(API Design)** — 요청/응답 스키마 및 오류 코드가 포함된 endpoint
-7. **오류 처리(Error Handling)** — 오류 코드, 조건, 사용자 메시지, 해결 방법
-8. **비기능 요구사항(Non-Functional Requirements)** — 성능, 보안, 접근성, 국제화(i18n)
-9. **테스트 시나리오(Test Scenarios)** — Given/When/Then 형식
-10. **미결 사항(Open Questions)** — 컨텍스트 및 상태가 포함된 미해결 항목
-11. **리뷰 이력(Review History)** — 라운드별 점수 및 결정 사항
+6. **오류 처리(Error Handling)** — 오류 코드, 조건, 사용자 메시지, 해결 방법
+7. **비기능 요구사항(Non-Functional Requirements)** — 성능, 보안, 접근성, 국제화(i18n)
+8. **테스트 시나리오(Test Scenarios)** — Given/When/Then 형식
+9. **미결 사항(Open Questions)** — 컨텍스트 및 상태가 포함된 미해결 항목
+10. **리뷰 이력(Review History)** — 라운드별 점수 및 결정 사항
 
 정보가 불충분한 섹션에는 TBD 마커가 표시됩니다. 초안은 `docs/specs/{feature}/{workingLanguage}/{feature}-spec.md`에 저장되며 상태는 `DRAFT`로 설정됩니다.
 
@@ -414,12 +413,11 @@ docs/specs/{feature}/
 3. 기능 요구사항(Functional Requirements)
 4. 화면 정의(Screen Definitions)
 5. 데이터 모델(Data Model)
-6. API 설계(API Design)
-7. 오류 처리(Error Handling)
-8. 비기능 요구사항(Non-Functional Requirements)
-9. 테스트 시나리오(Test Scenarios)
-10. 미결 사항(Open Questions)
-11. 리뷰 이력(Review History)
+6. 오류 처리(Error Handling)
+7. 비기능 요구사항(Non-Functional Requirements)
+8. 테스트 시나리오(Test Scenarios)
+9. 미결 사항(Open Questions)
+10. 리뷰 이력(Review History)
 
 ## 팁 및 모범 사례
 
