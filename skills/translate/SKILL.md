@@ -60,9 +60,27 @@ Update the progress file's translation status for each target language:
 }
 ```
 
-### Step 6: Confirm
+### Step 6: Sync Translations to Notion (if configured)
+
+1. Read `config.json` and check `notionParentPageUrl` — if empty or missing, skip this step silently
+2. Read the progress file to check for existing Notion page URLs in the `notion` field
+3. For each translated target language, launch a **notion-syncer** agent:
+   ```
+   Task(subagent_type: "notion-syncer", prompt: "Sync the spec to Notion. specPath: docs/specs/{feature}/{target_lang}/{feature}-spec.md, feature: {feature}, lang: {target_lang}, parentPageUrl: {notionParentPageUrl}, existingPageUrl: {existing_url_or_empty}")
+   ```
+4. Update the progress file's `notion` field with each agent's result:
+   ```json
+   {
+     "notion": {
+       "{lang}": { "pageUrl": "{url}", "lastSyncedAt": "{timestamp}" }
+     }
+   }
+   ```
+
+### Step 7: Confirm
 
 Report:
 - Which sections were translated/updated
 - Sync timestamps
 - Any `<!-- NEEDS_REVIEW -->` markers left by the translator
+- Notion sync results (if Notion sync was performed): page URLs created/updated

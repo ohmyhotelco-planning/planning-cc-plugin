@@ -43,6 +43,10 @@ Translation Status:
   {target_lang_1_name} ({target_lang_1}):  {synced ? "Synced" : "Out of sync"} — Last synced: {timestamp}
   {target_lang_2_name} ({target_lang_2}):  {synced ? "Synced" : "Out of sync"} — Last synced: {timestamp}
 
+Notion Sync: (only display this section if a `notion` field exists in the progress file)
+  {lang_name} ({lang}): {pageUrl} — Last synced: {lastSyncedAt}
+  {lang_name} ({lang}): {pageUrl} — Last synced: {lastSyncedAt}
+
 Open Questions: {count from spec's Open Questions section}
 ```
 
@@ -57,13 +61,13 @@ Open Questions: {count from spec's Open Questions section}
 
 ```
 Specifications Overview:
-┌──────────────────┬────────────┬───────┬─────────┬─────────┬────────────────────┐
-│ Feature          │ Status     │ Round │ Planner │ Tester  │ Translated         │
-├──────────────────┼────────────┼───────┼─────────┼─────────┼────────────────────┤
-│ social-login     │ reviewing  │   2   │  7/10   │  6/10   │ ko✓ vi✓            │
-│ user-profile     │ finalized  │   3   │  9/10   │  8/10   │ en✓ vi✓            │
-│ notifications    │ drafting   │   0   │   —     │   —     │ ko✗ vi✗            │
-└──────────────────┴────────────┴───────┴─────────┴─────────┴────────────────────┘
+┌──────────────────┬────────────┬───────┬─────────┬─────────┬────────────────────┬───────────┐
+│ Feature          │ Status     │ Round │ Planner │ Tester  │ Translated         │ Notion    │
+├──────────────────┼────────────┼───────┼─────────┼─────────┼────────────────────┼───────────┤
+│ social-login     │ reviewing  │   2   │  7/10   │  6/10   │ ko✓ vi✓            │ en✓ ko✓   │
+│ user-profile     │ finalized  │   3   │  9/10   │  8/10   │ en✓ vi✓            │ —         │
+│ notifications    │ drafting   │   0   │   —     │   —     │ ko✗ vi✗            │ —         │
+└──────────────────┴────────────┴───────┴─────────┴─────────┴────────────────────┴───────────┘
 ```
 
 5. If no specs exist yet, display:

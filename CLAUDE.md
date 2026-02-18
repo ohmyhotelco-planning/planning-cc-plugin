@@ -4,8 +4,8 @@ A Claude Code plugin that generates functional specifications through multi-agen
 
 ## Architecture
 
-- **Agents**: analyst (requirements gathering), planner (UX/business review), tester (edge cases/testability review), translator (working language → other languages)
-- **Skills**: `/planning-plugin:spec`, `/planning-plugin:review`, `/planning-plugin:translate`, `/planning-plugin:progress`, `/planning-plugin:migrate-language`
+- **Agents**: analyst (requirements gathering), planner (UX/business review), tester (edge cases/testability review), translator (working language → other languages), notion-syncer (Notion page sync)
+- **Skills**: `/planning-plugin:spec`, `/planning-plugin:review`, `/planning-plugin:translate`, `/planning-plugin:progress`, `/planning-plugin:migrate-language`, `/planning-plugin:sync-notion`
 - **Output language**: The working language (configured in `config.json`, default: `en`) is the source of truth. Translations to the other supported languages are generated alongside.
 
 ## Workflow
@@ -17,6 +17,7 @@ A Claude Code plugin that generates functional specifications through multi-agen
 5. User decides on feedback → spec updated
 6. Repeat or finalize
 7. Translator agent creates versions in other supported languages (once, after finalization)
+8. Notion sync: if `notionParentPageUrl` is configured, pages are created/updated in Notion automatically after finalization and translation
 
 ## Conventions
 
@@ -25,12 +26,13 @@ A Claude Code plugin that generates functional specifications through multi-agen
 - All agent reviews target the working language spec only
 - Technical terms (API, endpoint, schema, CRUD) are kept in English across all translations
 - Convergence: both agents score >= 8/10 → suggest finalization; 3 rounds stalled → suggest finalization with open questions
+- Notion sync: triggered automatically after spec finalization and translation; `notionParentPageUrl` must be set in `config.json`; page title format: `[{feature}] {lang} - Functional Specification`; progress file stores page URLs in `notion` field
 
 ## File Structure
 
 ```
-agents/          - Agent definitions (analyst, planner, tester, translator)
-skills/          - Skill entry points (spec, review, translate, progress, design)
+agents/          - Agent definitions (analyst, planner, tester, translator, notion-syncer)
+skills/          - Skill entry points (spec, review, translate, progress, design, sync-notion)
 hooks/           - Lifecycle hook configuration
 scripts/         - Hook handler scripts
 templates/       - Spec templates

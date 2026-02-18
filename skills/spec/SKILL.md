@@ -156,6 +156,29 @@ After all complete, update the progress file's translation status with `synced: 
    - "Run `/planning-plugin:design {feature}` to generate Figma screens (Phase 2)"
    - "Run `/planning-plugin:review {feature}` anytime to re-review"
    - "Edit the {workingLanguage} spec directly and run `/planning-plugin:translate {feature}` to sync translations"
+   - "Run `/planning-plugin:sync-notion {feature}` to manually re-sync Notion pages"
+
+### Step 7: Sync to Notion (if configured)
+
+1. Read `config.json` and check `notionParentPageUrl` — if empty or missing, skip this step silently
+2. Read the progress file to check for existing Notion page URLs in the `notion` field
+3. Launch a **notion-syncer** agent for the working language spec:
+   ```
+   Task(subagent_type: "notion-syncer", prompt: "Sync the spec to Notion. specPath: docs/specs/{feature}/{workingLanguage}/{feature}-spec.md, feature: {feature}, lang: {workingLanguage}, parentPageUrl: {notionParentPageUrl}, existingPageUrl: {existing_url_or_empty}")
+   ```
+4. For each target language that has a translated spec file, launch a **notion-syncer** agent:
+   ```
+   Task(subagent_type: "notion-syncer", prompt: "Sync the spec to Notion. specPath: docs/specs/{feature}/{target_lang}/{feature}-spec.md, feature: {feature}, lang: {target_lang}, parentPageUrl: {notionParentPageUrl}, existingPageUrl: {existing_url_or_empty}")
+   ```
+5. Update the progress file's `notion` field with each agent's result:
+   ```json
+   {
+     "notion": {
+       "{lang}": { "pageUrl": "{url}", "lastSyncedAt": "{timestamp}" }
+     }
+   }
+   ```
+6. Include Notion page URLs in the finalization summary
 
 ## Error Handling
 

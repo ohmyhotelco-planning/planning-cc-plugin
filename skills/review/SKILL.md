@@ -64,3 +64,7 @@ Ask: "Would you like to run another review round, or finalize the spec?"
 
 If the user is done with reviews, remind them:
 > "Run `/planning-plugin:translate {feature}` to sync translations."
+
+If `notionParentPageUrl` is configured in `config.json`, also remind:
+> "Run `/planning-plugin:sync-notion {feature} --lang={workingLanguage}` to update the Notion page.
+>  Note: translations are now out of sync — run `/planning-plugin:translate {feature}` first if you want to sync all languages."
