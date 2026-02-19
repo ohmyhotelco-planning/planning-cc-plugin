@@ -10,7 +10,10 @@ This Claude Code plugin automates the creation of functional specifications thro
 - **Planner** reviews UX flows and business logic
 - **Tester** evaluates edge cases and testability
 - **Translator** generates translations to other supported languages
-- **Figma Designer** supports design system integration (Phase 2)
+- **Notion Syncer** syncs finalized specs to Notion pages
+- **DSL Generator** converts screen definitions into structured UI DSL JSON
+- **Prototype Generator** scaffolds standalone React prototypes from UI DSL
+- **Figma Designer** converts React prototypes to Figma layers via MCP
 
 All specs are generated in the configured working language as the source of truth, with translations to the other supported languages created automatically.
 
@@ -37,7 +40,7 @@ Verify the installation:
 
 ## Quick Start
 
-Get from zero to your first spec in 5 steps:
+Get from zero to your first spec in 6 steps:
 
 ### 1. Install the plugin
 
@@ -46,13 +49,21 @@ Get from zero to your first spec in 5 steps:
 /plugin install planning-plugin@ohmyhotelco-planning --scope project
 ```
 
-### 2. Start a new spec
+### 2. Initialize project configuration
+
+```
+/planning-plugin:init
+```
+
+Sets up `.claude/planning-plugin.json` with your working language, supported languages, and optional Notion URL. This step is required before running `/planning-plugin:spec` — the spec skill reads configuration from this file.
+
+### 3. Start a new spec
 
 ```
 /planning-plugin:spec "social login with Google and Apple"
 ```
 
-### 3. Answer the analyst's questions
+### 4. Answer the analyst's questions
 
 The analyst agent first scans your project (package.json, source code, existing specs) to understand context, then asks targeted questions across 8 categories:
 
@@ -69,7 +80,7 @@ The analyst agent first scans your project (package.json, source code, existing 
 
 After each round, the analyst scores completeness per category. When the average reaches >= 7/10, you proceed to the draft. You can also say "proceed" at any time to skip remaining questions — unanswered items become TBD markers in the spec.
 
-### 4. Review the generated spec
+### 5. Review the generated spec
 
 Once the draft is generated in the working language and translated to the other supported languages, two reviewers examine it sequentially:
 
@@ -78,7 +89,7 @@ Once the draft is generated in the working language and translated to the other 
 
 You see a combined summary with scores, critical/major issues, and proposed test cases.
 
-### 5. Resolve feedback and finalize
+### 6. Resolve feedback and finalize
 
 For each issue, choose: **Accept** / **Reject** / **Modify** / **Defer**. Translations sync automatically after changes. When both reviewers score >= 8/10, the plugin suggests finalization.
 
@@ -89,6 +100,25 @@ For each issue, choose: **Accept** / **Reject** / **Modify** / **Defer**. Transl
 Use this anytime to check progress.
 
 ## Skills Reference
+
+### `/planning-plugin:init`
+
+**Syntax**: `/planning-plugin:init`
+
+**When to use**: Before creating your first spec in a project, to set up the plugin configuration.
+
+**What happens**:
+1. Creates `.claude/planning-plugin.json` in your project directory
+2. Prompts you to choose the working language (`en`, `ko`, or `vi`)
+3. Prompts you to configure supported languages for translations
+4. Optionally sets the Notion parent page URL for automatic sync
+
+**Example**:
+```
+/planning-plugin:init
+```
+
+---
 
 ### `/planning-plugin:spec`
 
@@ -217,11 +247,50 @@ Specifications Overview:
 
 ---
 
-### `/planning-plugin:design` (Phase 2 — coming soon)
+### `/planning-plugin:sync-notion`
 
-**Syntax**: `/planning-plugin:design feature-name`
+**Syntax**: `/planning-plugin:sync-notion feature-name [--lang=xx]`
 
-Will generate Figma screen designs from a finalized spec via Figma MCP integration. Not yet implemented.
+**When to use**: To manually sync a finalized spec to Notion, or to re-sync after editing. Automatic sync runs after finalization and translation, but you can trigger it manually anytime.
+
+**What happens**:
+1. Reads the spec files for the specified feature and language (defaults to working language)
+2. Creates or updates a Notion page under the configured `notionParentPageUrl`
+3. Page title format: `[{feature}] {lang} - Functional Specification`
+4. Stores the Notion page URL in the progress file's `notion` field
+
+**Example**:
+```
+/planning-plugin:sync-notion social-login
+/planning-plugin:sync-notion social-login --lang=ko
+```
+
+> **Note**: Requires `notionParentPageUrl` to be set in `.claude/planning-plugin.json`.
+
+---
+
+### `/planning-plugin:design`
+
+**Syntax**: `/planning-plugin:design feature-name [--stage=dsl|prototype|figma]`
+
+**When to use**: After finalizing a spec, to generate UI DSL, React prototypes, and optionally Figma designs.
+
+**What happens** (full pipeline):
+1. **Stage 1 — DSL Generation**: The DSL Generator agent reads `screens.md`, `data-model.md`, and `requirements.md`, then produces structured UI DSL JSON files in `docs/specs/{feature}/ui-dsl/` (a `manifest.json` with screen index + navigation map, and one `screen-{id}.json` per screen)
+2. **Stage 2 — Prototype Generation**: The Prototype Generator agent reads the UI DSL and scaffolds a standalone Vite + React + TypeScript + TailwindCSS + shadcn/ui project in `src/prototypes/{feature}/`
+3. **Stage 3 — Figma Generation** (optional): The Figma Designer agent reads the React prototype code and converts it to Figma layers via the `generate_figma_design` MCP tool
+
+Stages run sequentially (1→2→3). Use `--stage` to run a single stage independently.
+
+**Examples**:
+```
+/planning-plugin:design social-login                    # full pipeline (stages 1→2→3)
+/planning-plugin:design social-login --stage=dsl        # DSL generation only
+/planning-plugin:design social-login --stage=prototype  # prototype generation only
+/planning-plugin:design social-login --stage=figma      # Figma generation only
+```
+
+> **Note**: Stage 3 (Figma) is optional and requires Figma MCP configuration.
 
 ## Full Workflow Guide
 
@@ -342,7 +411,7 @@ You always have the final say. When you finalize:
 2. Progress file status updates to `finalized`
 3. You get a summary: total rounds, final scores, key decisions, remaining open questions
 4. Suggested next steps:
-   - `/planning-plugin:design {feature}` to generate Figma screens (Phase 2)
+   - `/planning-plugin:design {feature}` to generate UI DSL, React prototypes, and Figma designs
    - `/planning-plugin:review {feature}` anytime to re-review
    - Edit the working language spec directly and run `/planning-plugin:translate {feature}` to sync
 
@@ -372,11 +441,29 @@ Evaluates 5 dimensions: testability of requirements, edge cases and boundary con
 
 Translates specs while preserving markdown structure, technical terms, code blocks, and IDs. Uses the Sonnet model. Supports full translation (new specs) and partial translation (section-level updates after review changes). Adds a sync timestamp comment and marks ambiguous translations with `<!-- NEEDS_REVIEW -->`.
 
-### Figma Designer (Phase 2)
+### Notion Syncer
 
-**Role**: Generate Figma screen designs from finalized specs.
+**Role**: Sync finalized specs to Notion pages.
 
-Not yet implemented. Will use Figma MCP integration to create screens based on the Screen Definitions section of the spec.
+Creates or updates Notion pages under the configured parent page URL. Converts spec markdown into Notion blocks, preserving structure and formatting. Stores page URLs in the progress file for future updates. Uses the Sonnet model. Triggered automatically after finalization and translation, or manually via `/planning-plugin:sync-notion`.
+
+### DSL Generator
+
+**Role**: Convert screen definitions into structured UI DSL JSON.
+
+Reads `screens.md`, `data-model.md`, and `requirements.md` from the finalized spec, then produces structured JSON files in `docs/specs/{feature}/ui-dsl/`. Output includes a `manifest.json` (screen index + navigation map) and one `screen-{id}.json` per screen. Uses shadcn/ui component vocabulary exclusively. Uses the Opus model.
+
+### Prototype Generator
+
+**Role**: Scaffold standalone React prototypes from UI DSL.
+
+Reads the UI DSL JSON and generates a complete Vite + React + TypeScript + TailwindCSS + shadcn/ui project in `src/prototypes/{feature}/`. Includes mock data, page routing, and all referenced shadcn/ui components. The prototype is standalone — no dependency on the main project. Uses the Opus model.
+
+### Figma Designer
+
+**Role**: Convert React prototypes to Figma layers via MCP.
+
+Reads the React prototype code and translates components, layouts, and styles into Figma layers using the `generate_figma_design` MCP tool. This stage is optional and requires Figma MCP configuration. Uses the Sonnet model.
 
 ## Configuration
 
@@ -416,8 +503,19 @@ docs/specs/{feature}/
 │   └── test-scenarios.md
 ├── {target_lang_2}/                       ← Translation (same file structure)
 │   └── ...
+├── ui-dsl/                                ← UI DSL JSON (from design pipeline)
+│   ├── manifest.json                      ← Screen index + navigation map
+│   └── screen-{id}.json                   ← Per-screen component definitions
 └── .progress/
     └── {feature}.json                     ← Workflow state
+
+src/prototypes/{feature}/                  ← React prototype (standalone Vite project)
+├── package.json
+├── src/
+│   ├── App.tsx
+│   ├── pages/                             ← One page component per screen
+│   └── mocks/                             ← Mock data for prototype
+└── ...
 ```
 
 ## Spec Template Sections
@@ -458,12 +556,13 @@ docs/specs/{feature}/
 ## Directory Structure
 
 ```
-agents/          Agent definitions (analyst, planner, tester, translator, notion-syncer, figma-designer)
-skills/          Skill entry points (spec, review, translate, progress, design, sync-notion)
+agents/          Agent definitions (analyst, planner, tester, translator, notion-syncer, dsl-generator, prototype-generator, figma-designer)
+skills/          Skill entry points (init, spec, review, translate, progress, design, migrate-language, sync-notion)
 hooks/           Lifecycle hook configuration
 scripts/         Hook handler scripts
-templates/       Spec templates (spec-overview.md, requirements.md, screens.md, data-model.md, test-scenarios.md)
-docs/specs/      Generated specifications (5 files per language directory)
+templates/       Spec templates + UI DSL schema (spec-overview.md, requirements.md, screens.md, data-model.md, test-scenarios.md, ui-dsl-schema.json)
+docs/specs/      Generated specifications (5 files per lang dir + ui-dsl/)
+src/prototypes/  Generated React prototypes (standalone Vite projects per feature)
 ```
 
 ## Conventions
@@ -471,6 +570,9 @@ docs/specs/      Generated specifications (5 files per language directory)
 - Technical terms (API, endpoint, schema, CRUD) are kept in English across all translations
 - All agent reviews target the working language spec directory only
 - Specs are split into 5 files per language — `{feature}-spec.md` is the index file; detail files (`requirements.md`, `screens.md`, `data-model.md`, `test-scenarios.md`) hold the rest
+- UI DSL and prototypes use shadcn/ui component vocabulary exclusively (Card, Table, Button, Dialog, Alert, Badge, Form, Input, Select, etc.)
+- Prototypes are standalone Vite projects with no dependency on the main project
+- Figma generation is optional and requires Figma MCP configuration
 
 ## Author
 

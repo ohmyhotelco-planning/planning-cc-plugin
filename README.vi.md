@@ -14,7 +14,10 @@ Plugin Claude Code này tự động hóa việc tạo đặc tả chức năng 
 - **Planner** — Đánh giá luồng UX và logic nghiệp vụ
 - **Tester** — Đánh giá các trường hợp biên và khả năng kiểm thử
 - **Translator** — Tạo bản dịch sang các ngôn ngữ được hỗ trợ
-- **Figma Designer** — Hỗ trợ tích hợp hệ thống thiết kế (Phase 2)
+- **Notion Syncer** — Đồng bộ đặc tả đã hoàn thiện lên các trang Notion
+- **DSL Generator** — Chuyển đổi định nghĩa màn hình thành UI DSL JSON có cấu trúc
+- **Prototype Generator** — Tạo prototype React độc lập từ UI DSL
+- **Figma Designer** — Chuyển đổi prototype React thành các layer Figma qua MCP
 
 Tất cả đặc tả được tạo bằng ngôn ngữ làm việc (Working Language) đã cấu hình làm nguồn chính (Source of Truth), các bản dịch sang ngôn ngữ được hỗ trợ khác được tạo tự động.
 
@@ -41,7 +44,7 @@ Xác minh cài đặt:
 
 ## Bắt đầu nhanh
 
-Tạo đặc tả đầu tiên chỉ trong 5 bước:
+Tạo đặc tả đầu tiên chỉ trong 6 bước:
 
 ### 1. Cài đặt plugin
 
@@ -50,13 +53,21 @@ Tạo đặc tả đầu tiên chỉ trong 5 bước:
 /plugin install planning-plugin@ohmyhotelco-planning --scope project
 ```
 
-### 2. Bắt đầu đặc tả mới
+### 2. Khởi tạo cấu hình dự án
+
+```
+/planning-plugin:init
+```
+
+Thiết lập `.claude/planning-plugin.json` với ngôn ngữ làm việc, ngôn ngữ được hỗ trợ và URL Notion tùy chọn. Bước này là bắt buộc trước khi chạy `/planning-plugin:spec` — skill spec đọc cấu hình từ tệp này.
+
+### 3. Bắt đầu đặc tả mới
 
 ```
 /planning-plugin:spec "social login with Google and Apple"
 ```
 
-### 3. Trả lời câu hỏi của Analyst
+### 4. Trả lời câu hỏi của Analyst
 
 Tác tử Analyst trước tiên quét dự án của bạn (package.json, mã nguồn, đặc tả hiện có) để nắm bắt ngữ cảnh, sau đó đặt các câu hỏi có mục tiêu theo 8 danh mục:
 
@@ -73,7 +84,7 @@ Tác tử Analyst trước tiên quét dự án của bạn (package.json, mã n
 
 Sau mỗi vòng, Analyst chấm điểm mức độ hoàn thiện theo từng danh mục. Khi điểm trung bình đạt >= 7/10, bạn chuyển sang bước tạo bản nháp. Bạn cũng có thể nói "proceed" bất cứ lúc nào để bỏ qua các câu hỏi còn lại — các mục chưa trả lời sẽ được đánh dấu TBD trong đặc tả.
 
-### 4. Đánh giá đặc tả đã tạo
+### 5. Đánh giá đặc tả đã tạo
 
 Sau khi bản nháp được tạo bằng ngôn ngữ làm việc và dịch sang các ngôn ngữ được hỗ trợ khác, hai người đánh giá sẽ kiểm tra tuần tự:
 
@@ -82,7 +93,7 @@ Sau khi bản nháp được tạo bằng ngôn ngữ làm việc và dịch san
 
 Bạn sẽ thấy bản tóm tắt tổng hợp bao gồm điểm số, các vấn đề critical/major và các test case đề xuất.
 
-### 5. Xử lý phản hồi và hoàn thiện
+### 6. Xử lý phản hồi và hoàn thiện
 
 Với mỗi vấn đề, chọn: **Accept** / **Reject** / **Modify** / **Defer**. Bản dịch được đồng bộ tự động sau các thay đổi. Khi cả hai người đánh giá đều cho điểm >= 8/10, plugin đề xuất hoàn thiện.
 
@@ -93,6 +104,25 @@ Với mỗi vấn đề, chọn: **Accept** / **Reject** / **Modify** / **Defer*
 Sử dụng lệnh này bất cứ lúc nào để kiểm tra tiến độ.
 
 ## Tham chiếu Skill
+
+### `/planning-plugin:init`
+
+**Cú pháp**: `/planning-plugin:init`
+
+**Khi nào sử dụng**: Trước khi tạo đặc tả đầu tiên trong dự án, để thiết lập cấu hình plugin.
+
+**Quy trình thực hiện**:
+1. Tạo `.claude/planning-plugin.json` trong thư mục dự án của bạn
+2. Hướng dẫn bạn chọn ngôn ngữ làm việc (`en`, `ko`, hoặc `vi`)
+3. Hướng dẫn bạn cấu hình các ngôn ngữ được hỗ trợ cho bản dịch
+4. Tùy chọn thiết lập URL trang cha Notion để đồng bộ tự động
+
+**Ví dụ**:
+```
+/planning-plugin:init
+```
+
+---
 
 ### `/planning-plugin:spec`
 
@@ -221,11 +251,50 @@ Specifications Overview:
 
 ---
 
-### `/planning-plugin:design` (Phase 2 — sắp ra mắt)
+### `/planning-plugin:sync-notion`
 
-**Cú pháp**: `/planning-plugin:design feature-name`
+**Cú pháp**: `/planning-plugin:sync-notion feature-name [--lang=xx]`
 
-Sẽ tạo thiết kế màn hình Figma từ đặc tả đã hoàn thiện thông qua tích hợp Figma MCP. Chưa được triển khai.
+**Khi nào sử dụng**: Để đồng bộ thủ công đặc tả đã hoàn thiện lên Notion, hoặc đồng bộ lại sau khi chỉnh sửa. Đồng bộ tự động chạy sau khi hoàn thiện và dịch, nhưng bạn có thể kích hoạt thủ công bất cứ lúc nào.
+
+**Quy trình thực hiện**:
+1. Đọc các tệp đặc tả cho tính năng và ngôn ngữ được chỉ định (mặc định: ngôn ngữ làm việc)
+2. Tạo hoặc cập nhật trang Notion dưới `notionParentPageUrl` đã cấu hình
+3. Định dạng tiêu đề trang: `[{feature}] {lang} - Functional Specification`
+4. Lưu URL trang Notion vào trường `notion` của tệp tiến độ
+
+**Ví dụ**:
+```
+/planning-plugin:sync-notion social-login
+/planning-plugin:sync-notion social-login --lang=ko
+```
+
+> **Lưu ý**: Yêu cầu `notionParentPageUrl` phải được thiết lập trong `.claude/planning-plugin.json`.
+
+---
+
+### `/planning-plugin:design`
+
+**Cú pháp**: `/planning-plugin:design feature-name [--stage=dsl|prototype|figma]`
+
+**Khi nào sử dụng**: Sau khi hoàn thiện đặc tả, để tạo UI DSL, prototype React và tùy chọn thiết kế Figma.
+
+**Quy trình thực hiện** (toàn bộ pipeline):
+1. **Stage 1 — Tạo DSL**: Tác tử DSL Generator đọc `screens.md`, `data-model.md` và `requirements.md`, sau đó tạo các tệp UI DSL JSON có cấu trúc trong `docs/specs/{feature}/ui-dsl/` (một `manifest.json` với chỉ mục màn hình + bản đồ điều hướng, và một `screen-{id}.json` cho mỗi màn hình)
+2. **Stage 2 — Tạo Prototype**: Tác tử Prototype Generator đọc UI DSL và tạo dự án Vite + React + TypeScript + TailwindCSS + shadcn/ui độc lập trong `src/prototypes/{feature}/`
+3. **Stage 3 — Tạo Figma** (tùy chọn): Tác tử Figma Designer đọc mã prototype React và chuyển đổi thành các layer Figma qua công cụ MCP `generate_figma_design`
+
+Các stage chạy tuần tự (1→2→3). Sử dụng `--stage` để chạy từng stage độc lập.
+
+**Ví dụ**:
+```
+/planning-plugin:design social-login                    # toàn bộ pipeline (stage 1→2→3)
+/planning-plugin:design social-login --stage=dsl        # chỉ tạo DSL
+/planning-plugin:design social-login --stage=prototype  # chỉ tạo prototype
+/planning-plugin:design social-login --stage=figma      # chỉ tạo Figma
+```
+
+> **Lưu ý**: Stage 3 (Figma) là tùy chọn và yêu cầu cấu hình Figma MCP.
 
 ## Hướng dẫn quy trình đầy đủ
 
@@ -346,7 +415,7 @@ Quyết định cuối cùng luôn thuộc về bạn. Khi hoàn thiện:
 2. Trạng thái tệp tiến độ cập nhật thành `finalized`
 3. Bạn nhận được bản tóm tắt: tổng số vòng, điểm cuối cùng, quyết định quan trọng, câu hỏi mở còn lại
 4. Các bước tiếp theo được đề xuất:
-   - `/planning-plugin:design {feature}` — Tạo màn hình Figma (Phase 2)
+   - `/planning-plugin:design {feature}` — Tạo UI DSL, prototype React và thiết kế Figma
    - `/planning-plugin:review {feature}` — Đánh giá lại bất cứ lúc nào
    - Chỉnh sửa trực tiếp đặc tả ngôn ngữ làm việc và chạy `/planning-plugin:translate {feature}` để đồng bộ
 
@@ -376,11 +445,29 @@ Hoạt động theo hai giai đoạn: (A) phân tích ngữ cảnh dự án tự
 
 Dịch đặc tả trong khi bảo toàn cấu trúc markdown, thuật ngữ kỹ thuật, khối mã và ID. Sử dụng mô hình Sonnet. Hỗ trợ dịch toàn bộ (đặc tả mới) và dịch một phần (cập nhật cấp tệp sau khi đánh giá). Thêm chú thích timestamp đồng bộ và đánh dấu các bản dịch không rõ ràng bằng `<!-- NEEDS_REVIEW -->`.
 
-### Figma Designer (Phase 2)
+### Notion Syncer
 
-**Vai trò**: Tạo thiết kế màn hình Figma từ đặc tả đã hoàn thiện
+**Vai trò**: Đồng bộ đặc tả đã hoàn thiện lên các trang Notion
 
-Chưa được triển khai. Sẽ sử dụng tích hợp Figma MCP để tạo màn hình dựa trên phần Định nghĩa màn hình (Screen Definitions) của đặc tả.
+Tạo hoặc cập nhật các trang Notion dưới URL trang cha đã cấu hình. Chuyển đổi markdown đặc tả thành các khối Notion, bảo toàn cấu trúc và định dạng. Lưu URL trang vào tệp tiến độ để cập nhật trong tương lai. Sử dụng mô hình Sonnet. Được kích hoạt tự động sau khi hoàn thiện và dịch, hoặc thủ công qua `/planning-plugin:sync-notion`.
+
+### DSL Generator
+
+**Vai trò**: Chuyển đổi định nghĩa màn hình thành UI DSL JSON có cấu trúc
+
+Đọc `screens.md`, `data-model.md` và `requirements.md` từ đặc tả đã hoàn thiện, sau đó tạo các tệp JSON có cấu trúc trong `docs/specs/{feature}/ui-dsl/`. Đầu ra bao gồm `manifest.json` (chỉ mục màn hình + bản đồ điều hướng) và một `screen-{id}.json` cho mỗi màn hình. Sử dụng từ vựng thành phần shadcn/ui độc quyền. Sử dụng mô hình Opus.
+
+### Prototype Generator
+
+**Vai trò**: Tạo prototype React độc lập từ UI DSL
+
+Đọc UI DSL JSON và tạo dự án Vite + React + TypeScript + TailwindCSS + shadcn/ui hoàn chỉnh trong `src/prototypes/{feature}/`. Bao gồm dữ liệu mock, routing trang và tất cả thành phần shadcn/ui được tham chiếu. Prototype là độc lập — không phụ thuộc vào dự án chính. Sử dụng mô hình Opus.
+
+### Figma Designer
+
+**Vai trò**: Chuyển đổi prototype React thành các layer Figma qua MCP
+
+Đọc mã prototype React và chuyển đổi các thành phần, bố cục và kiểu dáng thành các layer Figma bằng công cụ MCP `generate_figma_design`. Stage này là tùy chọn và yêu cầu cấu hình Figma MCP. Sử dụng mô hình Sonnet.
 
 ## Cấu hình
 
@@ -420,8 +507,19 @@ docs/specs/{feature}/
 │   └── test-scenarios.md
 ├── {target_lang_2}/                       ← Bản dịch (cùng cấu trúc tệp)
 │   └── ...
+├── ui-dsl/                                ← UI DSL JSON (từ design pipeline)
+│   ├── manifest.json                      ← Chỉ mục màn hình + bản đồ điều hướng
+│   └── screen-{id}.json                   ← Định nghĩa thành phần theo màn hình
 └── .progress/
     └── {feature}.json                     ← Workflow state
+
+src/prototypes/{feature}/                  ← Prototype React (dự án Vite độc lập)
+├── package.json
+├── src/
+│   ├── App.tsx
+│   ├── pages/                             ← Một thành phần trang cho mỗi màn hình
+│   └── mocks/                             ← Dữ liệu mock cho prototype
+└── ...
 ```
 
 ## Các phần template đặc tả
@@ -462,12 +560,13 @@ docs/specs/{feature}/
 ## Cấu trúc thư mục
 
 ```
-agents/          Agent definitions (analyst, planner, tester, translator, notion-syncer, figma-designer)
-skills/          Skill entry points (spec, review, translate, progress, design, sync-notion)
+agents/          Agent definitions (analyst, planner, tester, translator, notion-syncer, dsl-generator, prototype-generator, figma-designer)
+skills/          Skill entry points (init, spec, review, translate, progress, design, migrate-language, sync-notion)
 hooks/           Lifecycle hook configuration
 scripts/         Hook handler scripts
-templates/       Spec templates (spec-overview.md, requirements.md, screens.md, data-model.md, test-scenarios.md)
-docs/specs/      Generated specifications (5 tệp mỗi thư mục ngôn ngữ)
+templates/       Spec templates + UI DSL schema (spec-overview.md, requirements.md, screens.md, data-model.md, test-scenarios.md, ui-dsl-schema.json)
+docs/specs/      Generated specifications (5 tệp mỗi thư mục ngôn ngữ + ui-dsl/)
+src/prototypes/  Generated React prototypes (dự án Vite độc lập theo tính năng)
 ```
 
 ## Quy tắc
@@ -475,6 +574,9 @@ docs/specs/      Generated specifications (5 tệp mỗi thư mục ngôn ngữ)
 - Thuật ngữ kỹ thuật (API, endpoint, schema, CRUD) được giữ nguyên tiếng Anh trong tất cả bản dịch
 - Tất cả đánh giá của tác tử chỉ nhắm vào thư mục đặc tả ngôn ngữ làm việc
 - Đặc tả được tách thành 5 tệp mỗi ngôn ngữ — `{feature}-spec.md` là tệp chỉ mục; các tệp chi tiết (`requirements.md`, `screens.md`, `data-model.md`, `test-scenarios.md`) chứa phần còn lại
+- UI DSL và prototype sử dụng từ vựng thành phần shadcn/ui độc quyền (Card, Table, Button, Dialog, Alert, Badge, Form, Input, Select, v.v.)
+- Prototype là dự án Vite độc lập, không phụ thuộc vào dự án chính
+- Tạo Figma là tùy chọn và yêu cầu cấu hình Figma MCP
 
 ## Tác giả
 
